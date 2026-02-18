@@ -1,1 +1,2 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/k-3ge8pq)
+*QA - Жовтяк Максим  -----> Щоб запустити тести, на верхній панелі є Tests ----> навести курсор, виповзає панель клікнути лкм на Run All Tests або використати комбінацію: Ctrl + R, A. Потім з'явиться вікно Test Explorer і тд...
+*Core - Карнаух Дар'я
