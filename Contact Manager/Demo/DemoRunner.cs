@@ -1,10 +1,6 @@
-﻿using Contact_Manager.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System;
+using Contact_Manager.Services;
+using Contact_Manager.Actions;
 namespace Contact_Manager.Demo
 {
     public class DemoRunner
@@ -18,7 +14,7 @@ namespace Contact_Manager.Demo
 
         public void Run()
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8; 
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             while (true)
             {
@@ -34,6 +30,7 @@ namespace Contact_Manager.Demo
                 Console.WriteLine("4. Видалити контакт");
                 Console.WriteLine("5. Сортувати список");
                 Console.WriteLine("6. Показати лише ВАЖЛИВІ");
+                Console.WriteLine("7. Статистика ");
                 Console.WriteLine("0. Зберегти та Вийти");
                 Console.WriteLine("-------------------------------");
                 Console.Write("Ваш вибір: ");
@@ -45,25 +42,28 @@ namespace Contact_Manager.Demo
                     switch (choice)
                     {
                         case "1":
-                            AddContactMenu();
+                            new AddContactAction().Execute(_service);
                             break;
                         case "2":
-                            ShowAllMenu();
+                            new ShowAllAction().Execute(_service);
                             break;
                         case "3":
-                            SearchMenu();
+                            new SearchAction().Execute(_service);
                             break;
                         case "4":
-                            DeleteMenu();
+                            new DeleteAction().Execute(_service);
                             break;
                         case "5":
-                            SortMenu();
+                            new SortAction().Execute(_service);
                             break;
                         case "6":
-                            ShowImportantMenu();
+                            new ShowImportantAction().Execute(_service);
+                            break;
+                        case "7":
+                            new StatsAction().Execute(_service);
                             break;
                         case "0":
-                            _service.SaveAndExit(); 
+                            _service.SaveAndExit();
                             Console.WriteLine("\nДані збережено. Роботу завершено.");
                             return;
                         default:
@@ -79,135 +79,8 @@ namespace Contact_Manager.Demo
                 }
             }
         }
-
-        private void AddContactMenu()
-        {
-            Console.Write("\nІм'я: ");
-            string name = Console.ReadLine();
-
-            Console.Write("\nТелефон: ");
-            string phone = Console.ReadLine();
-
-            Console.Write("\nЧи є контакт важливим? (yes/no): ");
-            string important = Console.ReadLine();
-
-            _service.AddContact(name, phone, important);
-            Console.WriteLine("\nКонтакт додано!");
-            Console.ReadLine();
-        }
-
-        private void ShowAllMenu()
-        {
-            Console.Clear();
-            Console.WriteLine("--- КОНТАКТИ ---");
-
-            var contacts = _service.GetAllContacts();
-
-            if (contacts.Count == 0)
-            {
-                Console.WriteLine("\nСписок порожній...");
-            }
-            else
-            {
-                for (int i = 0; i < contacts.Count; i++)
-                {
-                    Console.WriteLine($"\n{i + 1}. {contacts[i].ToString()}");
-                }
-            }
-
-            Console.ReadLine();
-        }
-
-        private void SearchMenu()
-        {
-            Console.Write("\nВведіть пошуковий запит: ");
-            string query = Console.ReadLine();
-
-            var results = _service.Search(query);
-
-            if (results.Count == 0)
-            {
-                Console.WriteLine("\nНічого не знайдено.");
-            }
-            else
-            {
-                for (int i = 0; i < results.Count; i++)
-                {
-                    Console.WriteLine($"\n{i + 1}. {results[i].ToString()}");
-                }
-            }
-
-            Console.ReadLine();
-        }
-
-        private void DeleteMenu()
-        {
-            Console.Clear();
-            Console.WriteLine("--- ВИДАЛЕННЯ ---");
-
-            var contacts = _service.GetAllContacts();
-
-            if (contacts.Count == 0)
-            {
-                Console.WriteLine("\nСписок порожній!");
-                Console.ReadKey();
-                return;
-            }
-
-            for (int i = 0; i < contacts.Count; i++)
-            {
-                Console.WriteLine($"\n{i + 1}. {contacts[i].ToString()}");
-            }
-
-            Console.Write("\nВведіть номер для видалення: ");
-
-            if (int.TryParse(Console.ReadLine(), out int idx))
-            {
-                if (idx > 0 && idx <= contacts.Count)
-                {
-                    _service.DeleteContact(idx);
-                    Console.WriteLine("\nКонтакт був видалений");
-                }
-                else
-                {
-                    Console.WriteLine("\nКонтакту під таким номером немає!");
-                }
-            }
-            else
-            {
-                throw new Exception("\nЦе не число!");
-            }
-
-            Console.ReadKey();
-        }
-
-        private void SortMenu()
-        {
-            _service.SortContacts();
-            Console.WriteLine("\nСписок відсортовано");
-            Console.ReadLine();
-        }
-
-        private void ShowImportantMenu()
-        {
-            Console.Clear();
-            Console.WriteLine("--- ВАЖЛИВІ КОНТАКТИ ---");
-
-            var important = _service.GetImportant();
-
-            if (important.Count == 0)
-            {
-                Console.WriteLine("\nВажливих контактів немає...");
-            }
-            else
-            {
-                for (int i = 0; i < important.Count; i++)
-                {
-                    Console.WriteLine($"\n{i + 1}. {important[i].ToString()}");
-                }
-            }
-
-            Console.ReadLine();
-        }
     }
 }
+        
+
+    

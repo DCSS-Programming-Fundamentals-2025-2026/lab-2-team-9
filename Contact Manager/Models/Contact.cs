@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Contact_Manager.Models
 {
-    public class Contact : PersonRecord, IMatchable
+    public class Contact : PersonRecord, IMatchable, IComparable
     {
         public string Phone {  get; set; }
 
@@ -52,6 +52,25 @@ namespace Contact_Manager.Models
             }
 
             return $"{Name} - {Phone} {markOfImportant}";
+        }
+
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            if (obj is Contact otherContact)
+            {
+              
+                return string.Compare(this.Name, otherContact.Name, StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                throw new ArgumentException("Об'єкт не є типом Contact");
+            }
         }
     }
 }
