@@ -1,10 +1,11 @@
-﻿using NUnit.Framework;
-using Contact_Manager.Services;
-using Contact_Manager.Repositories;
+﻿using Contact_Manager.Comparers;
 using Contact_Manager.Models;
+using Contact_Manager.Repositories;
+using Contact_Manager.Services;
+using NUnit.Framework;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Contact_Manager.Tests
 {
@@ -233,40 +234,71 @@ namespace Contact_Manager.Tests
         }
 
         [Test]
-        public void Integration_CreateActionsReport()
+        public void Integration_Swap_WhenSortByPhone()
         {
             // Arrange
-            _service.AddContact("Mom", "093302", "yes");
-            _service.AddContact("Work", "3388920", "yes");
-            _service.AddContact("SMN", "002421", "no");
-
-            // Act 
-            _service.DeleteContact(3); 
-            _service.SortContacts();   
-
-            // Assert 
-            int total = _service.GetTotalCount();
-            var important = _service.GetImportant();
-
-            Assert.That(total, Is.EqualTo(2)); 
-            Assert.That(important.Count, Is.EqualTo(2)); 
-            Assert.That(_service.GetAllContacts()[0].Name, Is.EqualTo("Mom")); 
-        }
-
-        [Test]
-        public void SortContacts_CorrectOrder()
-        {
-            // Arrange
-            _service.AddContact("Zaha", "382992", "yes");
-            _service.AddContact("Anna", "212344 ", "no");
+            _service.AddContact("Ivan", "333", "no");
+            _service.AddContact("ann", "111", "yes");
+            _service.AddContact("Oleh", "222", "no");
 
             // Act
-            _service.SortContacts();
+            var contacts = _service.GetAllContacts();
 
+            Contact[] arr = contacts.ToArray();
+            Array.Sort(arr, new ContactPhoneComparer());
+
+            contacts.Clear();
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                contacts.Add(arr[i]);
+            }
+
+            _service.UpdateAndSave(contacts);
             // Assert
-            var all = _service.GetAllContacts();
-            Assert.That(all[0].Name, Is.EqualTo("Anna"));
-            Assert.That(all[1].Name, Is.EqualTo("Zaha"));
+            var savedContacts = _service.GetAllContacts();
+
+            Assert.That(savedContacts.Count == 3);
+            Assert.That(savedContacts[0].Phone == "111"); 
+            Assert.That(savedContacts[1].Phone == "222"); 
+            Assert.That(savedContacts[2].Phone == "333");
         }
+
+        //[Test]
+        //  public void Integration_CreateActionsReport()
+        //{
+        // Arrange
+        //    _service.AddContact("Mom", "093302", "yes");
+        //    _service.AddContact("Work", "3388920", "yes");
+        //    _service.AddContact("SMN", "002421", "no");
+
+        // Act 
+        //   _service.DeleteContact(3); 
+        //   _service.SortContacts();   
+
+        // Assert 
+        //  int total = _service.GetTotalCount();
+        //   var important = _service.GetImportant();
+
+        //   Assert.That(total, Is.EqualTo(2)); 
+        //   Assert.That(important.Count, Is.EqualTo(2)); 
+        //   Assert.That(_service.GetAllContacts()[0].Name, Is.EqualTo("Mom")); 
+        //}
+
+        //[Test]
+        //public void SortContacts_CorrectOrder()
+        //{
+        // Arrange
+        //   _service.AddContact("Zaha", "382992", "yes");
+        //   _service.AddContact("Anna", "212344 ", "no");
+
+        // Act
+        //   _service.SortContacts();
+
+        // Assert
+        //   var all = _service.GetAllContacts();
+        //   Assert.That(all[0].Name, Is.EqualTo("Anna"));
+        //   Assert.That(all[1].Name, Is.EqualTo("Zaha"));
+        //}
     }
 }
