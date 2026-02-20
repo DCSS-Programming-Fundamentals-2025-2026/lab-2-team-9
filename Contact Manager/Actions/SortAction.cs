@@ -11,9 +11,10 @@ namespace Contact_Manager.Actions
         {
             Console.Clear();
             Console.WriteLine("--- СОРТУВАННЯ ---");
-            Console.WriteLine("1. За замовчуванням (за ім'ям)");
+            Console.WriteLine("\n1. За замовчуванням (за ім'ям)");
             Console.WriteLine("2. Альтернативне (за телефоном)");
             Console.Write("\nОберіть тип сортування: ");
+
             string sortChoice = Console.ReadLine();
             var contacts = service.GetAllContacts();
 
@@ -28,6 +29,7 @@ namespace Contact_Manager.Actions
                 Array.Sort(arr, new ContactPhoneComparer());
 
                 contacts.Clear();
+
                 for (int i = 0; i < arr.Length; i++)
                 {
                     contacts.Add(arr[i]);
@@ -42,10 +44,7 @@ namespace Contact_Manager.Actions
                 return;
             }
 
-            for (int i = 0; i < contacts.Count; i++)
-            {
-                Console.WriteLine($"\n{i + 1}. {contacts[i].ToString()}");
-            }
+            service.UpdateAndSave(contacts);
 
             Console.ReadLine();
         }

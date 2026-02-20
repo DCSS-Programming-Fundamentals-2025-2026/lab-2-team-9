@@ -79,51 +79,6 @@ namespace Contact_Manager.Services
             return found;
         }
 
-        public void SortContacts()
-        {
-            List<Contact> list = repository.GetAll();
-
-            int left = 0, right = list.Count - 1;
-            bool sorted = false;
-
-            while (left < right)
-            {
-                sorted = true;
-
-                for (int i = left; i < right; i++)
-                {
-                    if (string.Compare(list[i].Name, list[i + 1].Name, StringComparison.OrdinalIgnoreCase) > 0)
-                    {
-                        Swap(list, i, i + 1); 
-                        sorted = false;
-                    }
-                }
-
-                if (sorted) break;
-
-                right--;
-
-                for (int i = right - 1; i >= left; i--)
-                {
-                    if (string.Compare(list[i].Name, list[i + 1].Name, StringComparison.OrdinalIgnoreCase) > 0)
-                    {
-                        Swap(list, i, i + 1);
-                        sorted = false;
-                    }
-                }
-                left++;
-            }
-
-            repository.UpdateList(list);
-        }
-
-        private void Swap(List<Contact> list, int a, int b)
-        {
-            Contact buf = list[a];
-            list[a] = list[b];
-            list[b] = buf;
-        }
-
         public int GetTotalCount()
         {
             return statisticsService.GetTotalCount(repository.GetAll());
@@ -132,6 +87,12 @@ namespace Contact_Manager.Services
         public List<Contact> GetImportant()
         {
             return statisticsService.ImportantContacts(repository.GetAll());
+        }
+
+        public void UpdateAndSave(List<Contact> sortedContacts)
+        {
+            repository.UpdateList(sortedContacts);
+            repository.SaveChanges();
         }
 
         public void SaveAndExit()
