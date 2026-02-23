@@ -264,41 +264,99 @@ namespace Contact_Manager.Tests
             Assert.That(savedContacts[2].Phone == "333");
         }
 
-        //[Test]
-        //  public void Integration_CreateActionsReport()
-        //{
-        // Arrange
-        //    _service.AddContact("Mom", "093302", "yes");
-        //    _service.AddContact("Work", "3388920", "yes");
-        //    _service.AddContact("SMN", "002421", "no");
+        [Test]
+        public void Integration_SomeActions()
+        {
+            // Arrange
+            _service.AddContact("Mom", "289302010", "yes");
+            _service.AddContact("Office", "338199", "yes");
+            _service.AddContact("smth", "637724", "no");
 
-        // Act 
-        //   _service.DeleteContact(3); 
-        //   _service.SortContacts();   
+            // Act 
+            _service.DeleteContact(3);
 
-        // Assert 
-        //  int total = _service.GetTotalCount();
-        //   var important = _service.GetImportant();
+            var contacts = _service.GetAllContacts();
+            contacts.Sort();
+            _service.UpdateAndSave(contacts);
 
-        //   Assert.That(total, Is.EqualTo(2)); 
-        //   Assert.That(important.Count, Is.EqualTo(2)); 
-        //   Assert.That(_service.GetAllContacts()[0].Name, Is.EqualTo("Mom")); 
-        //}
+            // Assert 
+            int total = _service.GetTotalCount();
+            var important = _service.GetImportant();
+            var savedContacts = _service.GetAllContacts();
 
-        //[Test]
-        //public void SortContacts_CorrectOrder()
-        //{
-        // Arrange
-        //   _service.AddContact("Zaha", "382992", "yes");
-        //   _service.AddContact("Anna", "212344 ", "no");
+            Assert.That(total, Is.EqualTo(2));
+            Assert.That(important.Count, Is.EqualTo(2)); 
+            Assert.That(savedContacts[0].Name, Is.EqualTo("Mom")); 
+            Assert.That(savedContacts[1].Name, Is.EqualTo("Office"));
+        }
 
-        // Act
-        //   _service.SortContacts();
+        [Test]
+        public void Integration_SortContactsByName()
+        {
+            // Arrange 
+            _service.AddContact("zaHa", "378221", "yes");
+            _service.AddContact("ann", "2222321", "no");
 
-        // Assert
-        //   var all = _service.GetAllContacts();
-        //   Assert.That(all[0].Name, Is.EqualTo("Anna"));
-        //   Assert.That(all[1].Name, Is.EqualTo("Zaha"));
-        //}
+            // Act 
+            var contacts = _service.GetAllContacts();
+            contacts.Sort(); 
+            _service.UpdateAndSave(contacts);
+
+            // Assert 
+            var all = _service.GetAllContacts();
+
+            Assert.That(all[0].Name, Is.EqualTo("ann")); 
+            Assert.That(all[1].Name, Is.EqualTo("zaHa")); 
+        }
+
+        [Test]
+        public void Search_ByPhoneNumber_ReturnsContact()
+        {
+            // Arrange
+            _service.AddContact("Jo", "17728882", "no");
+            _service.AddContact("jane", "3902939", "yes");
+
+            // Act
+            var results = _service.Search("3902"); 
+
+            // Assert
+            Assert.That(results.Count, Is.EqualTo(1));
+            Assert.That(results[0].Name, Is.EqualTo("jane"));
+        }
+
+        [Test]
+        public void Search_DontMatch()
+        {
+            // Arrange
+            _service.AddContact("max", "378111", "yes");
+
+            // Act
+            var results = _service.Search("smth");
+
+            // Assert
+            Assert.That(results.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void AddContactWithEmtyPhone()
+        {
+            // Arrange
+            string phone = " "; 
+
+            // Act & Assert
+            try
+            {
+                _service.AddContact("smn", phone, "no");
+                Assert.Fail("Очікувалося ArgumentException, але додало контак");
+            }
+            catch (ArgumentException)
+            {
+                Assert.Pass(); 
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Зловило {ex.GetType().Name}, а повинно було ArgumentException");
+            }
+        }
     }
 }
